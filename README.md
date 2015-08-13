@@ -22,3 +22,33 @@ app.config.from_envvar("APP_SETTINGS")
 habitat = Habitat(app)
 db = SQLAlchemy(app)
 ```
+
+Bear in mind that **Flask-Habitat** only looks for configuration values which
+are strings, which makes it compatible with any configuration format used,
+which is particularly beneficial when using YAML. Below is an example
+YAML-formatted config file using [Flask-Environments][environments]:
+
+```yaml
+COMMON: &common
+  SQLALCHEMY_URI: $DATABASE_URI
+  SECRET_KEY: $SECRET_KEY
+  TOKEN_SALT: $TOKEN_SALT
+
+DEVELOPMENT:
+  <<: *common
+  DEBUG: True
+
+PRODUCTION:
+  <<: *common
+  SERVER_NAME: $SERVER_NAME
+```
+
+[environments]: https://github.com/mattupstate/flask-environments
+
+## Configuration
+
+- **HABITAT_SOURCE** defines where configuration values will be pulled from,
+  e.g. the environment, a file, or in the future, some user-defined source.
+  _Currently, the only supported value is ``environment``._
+- **HABITAT_QUALIFIER** defaults to ``$``, and is the prefix that will be
+  expected when looking for placeholders in configuration values.
